@@ -2,7 +2,7 @@
 set -euo pipefail
 
 TARGET="${1:-}"
-SPRAY_PASSWORD="${2:-password}"
+SPRAY_PASSWORD="${2:-}"
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 USERS="$ROOT_DIR/wordlists/smb-users.txt"
 OUTPUT_DIR="$ROOT_DIR/results"
@@ -10,8 +10,8 @@ NMAP_OUTPUT="$OUTPUT_DIR/smb-nmap.txt"
 MEDUSA_OUTPUT="$OUTPUT_DIR/smb-spray.txt"
 
 usage() {
-  echo "Uso: $0 <ip-privado-do-alvo> [senha-para-spray]"
-  echo "Exemplo: $0 192.168.56.101 password"
+  echo "Uso: $0 <ip-privado-do-alvo> <senha-para-spray>"
+  echo "Exemplo: $0 192.168.56.101 <senha-do-lab>"
 }
 
 is_private_ipv4() {
@@ -19,7 +19,7 @@ is_private_ipv4() {
   [[ "$ip" =~ ^10\. ]] || [[ "$ip" =~ ^192\.168\. ]] || [[ "$ip" =~ ^172\.(1[6-9]|2[0-9]|3[0-1])\. ]]
 }
 
-if [[ -z "$TARGET" ]]; then
+if [[ -z "$TARGET" || -z "$SPRAY_PASSWORD" ]]; then
   usage
   exit 1
 fi
